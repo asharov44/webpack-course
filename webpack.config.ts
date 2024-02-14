@@ -15,11 +15,13 @@ export default (env: EnbVariables) => {
     const config: webpack.Configuration  = {
         // Что собирать
         mode: env.mode ?? 'development',
-        entry: path.resolve(__dirname, 'src', 'index.ts'),
+        entry: path.resolve(__dirname, 'src', 'index.tsx'),
         //Подключение ts loader-a
         module: {
             rules: [
                 {
+                    // ts-loader умеет работать с JSX
+                    // Если бы мы не использовали ts нужен был бы babel-loader
                     test: /\.tsx?$/,
                     use: 'ts-loader',
                     exclude: /node_modules/,
