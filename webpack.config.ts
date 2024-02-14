@@ -1,14 +1,17 @@
 import path from 'path';
 import HtmlWebpackPlugin from 'html-webpack-plugin';
+import type { Configuration as DevServerConfiguration } from "webpack-dev-server"
 import webpack from 'webpack';
 
 type Mode = 'development' | 'production';
 
 interface EnbVariables {
     mode: Mode;
+    port: number;
 }
 
 export default (env: EnbVariables) => {
+    const isDev = env.mode === 'development';
     const config: webpack.Configuration  = {
         // Что собирать
         mode: env.mode ?? 'development',
@@ -39,6 +42,11 @@ export default (env: EnbVariables) => {
             new HtmlWebpackPlugin({ template: path.resolve(__dirname, 'public', 'index.html')}),
             new webpack.ProgressPlugin()
         ],
+        devtool: isDev ? 'inline-source-map' : false,
+        devServer: isDev ? {
+            open: true,
+            port: env.port ?? 3000,
+        } : undefined,
     };
     return config;
 };
