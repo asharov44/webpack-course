@@ -2,6 +2,7 @@ import path from 'path';
 import HtmlWebpackPlugin from 'html-webpack-plugin';
 import type { Configuration as DevServerConfiguration } from "webpack-dev-server"
 import webpack from 'webpack';
+import MiniCssExtractPlugin from "mini-css-extract-plugin";
 
 type Mode = 'development' | 'production';
 
@@ -12,6 +13,8 @@ interface EnbVariables {
 
 export default (env: EnbVariables) => {
     const isDev = env.mode === 'development';
+    const isProd = env.mode === 'production';
+
     const config: webpack.Configuration  = {
         // Что собирать
         mode: env.mode ?? 'development',
@@ -19,6 +22,15 @@ export default (env: EnbVariables) => {
         //Подключение ts loader-a
         module: {
             rules: [
+                // порядок имеет значение
+                {
+                    test: /\.s[ac]ss$/i,
+                    use: [
+                        isDev ?  'style-loader' : MiniCssExtractPlugin.loader,
+                        "css-loader",
+                        "sass-loader"
+                    ],
+                },
                 {
                     // ts-loader умеет работать с JSX
                     // Если бы мы не использовали ts нужен был бы babel-loader
@@ -43,7 +55,11 @@ export default (env: EnbVariables) => {
         plugins: [
             new HtmlWebpackPlugin({ template: path.resolve(__dirname, 'public', 'index.html')}),
             // Показывает процент сборки (медленный)
-            isDev && new webpack.ProgressPlugin()
+            isDev && new webpack.ProgressPlugin(),
+            isProd && new MiniCssExtractPlugin({
+                filename: 'css/[name].[contenthash:8].css',
+                chunkFilename: 'css/[name].[contenthash:8].css'
+            })
         ].filter(Boolean),
         devtool: isDev && 'inline-source-map',
         devServer: isDev ? {
