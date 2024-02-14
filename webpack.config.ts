@@ -40,9 +40,10 @@ export default (env: EnbVariables) => {
         },
         plugins: [
             new HtmlWebpackPlugin({ template: path.resolve(__dirname, 'public', 'index.html')}),
-            new webpack.ProgressPlugin()
-        ],
-        devtool: isDev ? 'inline-source-map' : false,
+            // Показывает процент сборки (медленный)
+            isDev && new webpack.ProgressPlugin()
+        ].filter(Boolean),
+        devtool: isDev && 'inline-source-map',
         devServer: isDev ? {
             open: true,
             port: env.port ?? 3000,
