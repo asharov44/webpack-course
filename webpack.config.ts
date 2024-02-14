@@ -9,6 +9,7 @@ import {BuildMode, BuildPaths} from "./config/build/types/types";
 interface EnbVariables {
     mode: BuildMode;
     port: number;
+    analyzer?: boolean;
 }
 
 export default (env: EnbVariables) => {
@@ -21,7 +22,8 @@ export default (env: EnbVariables) => {
     const config: webpack.Configuration  = buildWebpack({
         paths,
         mode: env.mode ?? 'development',
-        port: env.port ?? 3000
+        port: env.port ?? 3000,
+        analyzer: env.analyzer
     });
     return config;
 };
